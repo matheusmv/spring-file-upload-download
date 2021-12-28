@@ -9,6 +9,9 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.util.Arrays;
+import java.util.stream.Collectors;
+
 @RestController
 @RequestMapping("/files")
 public class FileSystemUploadResourceHandler {
@@ -17,9 +20,18 @@ public class FileSystemUploadResourceHandler {
     private FileSystemUpload fileSystemUpload;
 
     @PostMapping("/upload")
-    public ResponseEntity<Void> uploadToLocalFileSystem(@RequestParam("file") MultipartFile file) {
+    public ResponseEntity<?> uploadToLocalFileSystem(@RequestParam("file") MultipartFile file) {
         var uri = fileSystemUpload.uploadToLocalFileSystem(file);
 
-        return ResponseEntity.created(uri).build();
+        return ResponseEntity.ok().body(uri);
+    }
+
+    @PostMapping("/multi-upload")
+    public ResponseEntity<?> multiUpload(@RequestParam("files") MultipartFile[] files) {
+        var listOfURIs = Arrays.stream(files)
+                .map(fileSystemUpload::uploadToLocalFileSystem)
+                .collect(Collectors.toList());
+
+        return ResponseEntity.ok().body(listOfURIs);
     }
 }
