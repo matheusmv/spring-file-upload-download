@@ -12,7 +12,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.mvc.method.annotation.StreamingResponseBody;
 
-import java.io.IOException;
 import java.time.Instant;
 import java.util.List;
 import java.util.zip.ZipOutputStream;
@@ -37,7 +36,7 @@ public class FileSystemDownloadResourceHandler {
     }
 
     @GetMapping(value = "/zip-download", produces = "application/zip")
-    public ResponseEntity<StreamingResponseBody> zipDownload(@RequestParam("name") List<String> fileNames) throws IOException {
+    public ResponseEntity<StreamingResponseBody> zipDownload(@RequestParam("name") List<String> fileNames) {
         var zipFileName = "download-" + Instant.now().toString() + ".zip";
 
         return ResponseEntity.ok()
