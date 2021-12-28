@@ -1,1 +1,12 @@
+spring:
+  profiles:
+    active: test
 
+  jpa:
+    open-in-view: false
+
+  servlet:
+    multipart:
+      enabled: true  # Whether to enable support of multipart uploads.
+      max-file-size: 10MB  # It specifies the maximum size permitted for uploaded files. The default is 1MB.
+      max-request-size: 15MB  # It specifies the maximum size allowed for multipart/form-data requests. The default is 10MB.

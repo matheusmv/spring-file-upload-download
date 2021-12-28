@@ -1,0 +1,20 @@
+version: "3"
+
+services:
+  appdb:
+    image: "mysql:8.0"
+    container_name: appdb-mysql
+    ports:
+      - "3306:3306"
+    environment:
+      MYSQL_ROOT_PASSWORD: rootpw
+      MYSQL_USER: app
+      MYSQL_PASSWORD: apppw
+      MYSQL_DATABASE: testdb
+    volumes:
+      - myappdata:/var/lib/mysql
+    restart: always
+
+volumes:
+  myappdata:
+    name: myappdata
