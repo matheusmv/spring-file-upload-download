@@ -10,8 +10,8 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.servlet.mvc.method.annotation.StreamingResponseBody;
 
-import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.time.Instant;
 import java.util.List;
@@ -37,16 +37,19 @@ public class FileSystemDownloadResourceHandler {
     }
 
     @GetMapping(value = "/zip-download", produces = "application/zip")
-    public void zipDownload(@RequestParam("name") List<String> fileNames, HttpServletResponse response) throws IOException {
-        var zipOutPutStream = new ZipOutputStream(response.getOutputStream());
-
-        fileSystemDownload.addFilesToZipOutputStream(zipOutPutStream, fileNames);
-
-        zipOutPutStream.finish();
-        zipOutPutStream.close();
-
+    public ResponseEntity<StreamingResponseBody> zipDownload(@RequestParam("name") List<String> fileNames) throws IOException {
         var zipFileName = "download-" + Instant.now().toString() + ".zip";
-        response.setStatus(HttpServletResponse.SC_OK);
-        response.addHeader(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + zipFileName + "\"");
+
+        return ResponseEntity.ok()
+                .header(
+                        HttpHeaders.CONTENT_DISPOSITION,
+                        "attachment; filename=\"" + zipFileName + "\""
+                ).body(outputStream -> {
+                    var zipOutPutStream = new ZipOutputStream(outputStream);
+
+                    fileSystemDownload.addFilesToZipOutputStream(zipOutPutStream, fileNames);
+
+                    zipOutPutStream.close();
+                });
     }
 }
